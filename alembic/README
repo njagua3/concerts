@@ -1,0 +1,105 @@
+# Concert Domain Project
+
+This project models a concert domain using SQLAlchemy and Python. It allows for the creation of `Bands`, `Venues`, and `Concerts` with methods to retrieve relationships and perform queries such as finding the most frequent band at a venue or generating an introduction string for a concert.
+
+- [Models](#models)
+  - [Band](#band)
+  - [Venue](#venue)
+  - [Concert](#concert)
+
+
+
+## Project Overview
+
+This project demonstrates how to manage a concert domain, with relationships between Bands, Venues, and Concerts using SQLAlchemy ORM. It provides functionalities such as:
+- Adding Bands, Venues, and Concerts.
+- Retrieving all concerts for a band or venue.
+- Checking if a concert is in a band's hometown.
+- Aggregating data like which band has performed the most at a venue or generating concert introductions.
+
+## Setup Instructions
+
+### Prerequisites
+- Python 3.8+
+- SQLite (default database)
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone
+   cd concerts
+
+2. Set up a virtual environment (optional but recommended):
+
+python3 -m venv venv
+source venv/bin/activate
+
+3. Install dependencies:
+pip install -r requirements.txt
+
+4. Run the initial migrations:
+   alembic upgrade head
+
+ Usage Examples
+Once you've set up the database, you can create and query data as follows:
+
+Add a Band and Venue:
+
+from models import Band, Venue, Concert
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy import create_engine
+
+engine = create_engine('sqlite:///concerts.db')
+Session = sessionmaker(bind=engine)
+session = Session()
+
+# Create a Band and Venue
+band1 = Band(name="The Rockers", hometown="Nairobi")
+venue1 = Venue(title="Grand Arena", city="Nairobi")
+session.add(band1)
+session.add(venue1)
+session.commit()
+
+Add a Concert:
+
+band1.play_in_venue(venue1, "2024-09-30", session)
+
+Retrieve Concerts for a Band:
+
+first_band = session.query(Band).first()
+print(first_band.venues(session))  # Get all venues this band has played at.
+
+Check if a Concert is a Hometown Show:
+
+first_concert = session.query(Concert).first()
+print(first_concert.hometown_show(session))  # True if it's a hometown show
+
+
+Methods Explained
+Band Methods
+concerts(session): Returns all concerts the band has performed.
+
+venues(session): Returns a list of venues where the band has performed.
+
+play_in_venue(venue, date, session): Adds a new concert for the band in the specified venue and date.
+
+all_introductions(session): Returns an array of introduction strings for each concert in the format: "Hello {venue_city}!!!!! We are {band_name} and we're from {band_hometown}"
+
+most_performances(session): Class method that returns the band that has performed the most concerts.
+
+Venue Methods
+concerts(session): Returns all concerts held at the venue.
+
+bands(session): Returns all bands that have performed at the venue.
+
+concert_on(date, session): Returns the concert held on the specified date at the venue.
+
+most_frequent_band(session): Returns the band that has performed the most concerts at the venue.
+
+Concert Methods
+hometown_show(session): Returns True if the concert is held in the band's hometown, False otherwise.
+
+introduction(session): Returns the introduction string for the concert in the format: "Hello {venue_city}!!!!! We are {band_name} and we're from {band_hometown}"
+
+
